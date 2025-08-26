@@ -547,10 +547,10 @@
 
         // Update header information
         function updateHeader() {
-            document.querySelector(".restaurant-name").textContent = headerData.restaurantName || "Restaurant";
+            document.querySelector(".restaurant-name").textContent = headerData.storeName || "Restaurant";
             document.querySelector(".restaurant-details").textContent = 
                 `${headerData.address || ""} | ${headerData.contact || ""}`.replace(/^\s*\|\s*|\s*\|\s*$/g, '');
-            document.getElementById("page-title").textContent = `${headerData.restaurantName || "Restaurant"} Menu`;
+            document.getElementById("page-title").textContent = `${headerData.storeName || "Restaurant"} Menu`;
             
             // Update call button
             const callBtn = document.getElementById("call-btn");
