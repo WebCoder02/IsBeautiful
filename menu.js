@@ -450,6 +450,14 @@ function shareOnWhatsApp() {
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappURL, "_blank");
 }
+//Function for call us button
+        function callUs() {
+            if (headerData.contact) {
+                window.location.href = `tel:${headerData.contact.replace(/\s+/g, '')}`;
+            } else {
+                alert("Phone number not available.");
+            }
+        }
 function updateTheme() {
     const currentHour = new Date().getHours();
     const isLightMode = currentHour >= 7 && currentHour < 19; // 7 AM to 7 PM

@@ -468,7 +468,7 @@
 <!--                 <button class="footer-btn" onclick="sendLocationOnWhatsApp()" aria-label="Share Location">
                     <i class="fas fa-map-marker-alt"></i> Send Location
                 </button> -->
-                <button class="footer-btn"  id="call-btn" aria-label="Call Restaurant">
+                <button class="footer-btn"  id="call-btn" onclick="callUs();" aria-label="Call Restaurant">
                     <i class="fas fa-phone"></i> Call Us
                 </button>
             </div>
@@ -909,6 +909,14 @@ function updateCartUI() {
     updateCartUI();
 }
 
+        }
+        //Function for call us button
+        function callUs() {
+            if (headerData.contact) {
+                window.location.href = `tel:${headerData.contact.replace(/\s+/g, '')}`;
+            } else {
+                alert("Phone number not available.");
+            }
         }
 
         // Handle window resize
