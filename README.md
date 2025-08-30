@@ -6,6 +6,4 @@
 * Updated `index.html` to link product titles to the detail page.
 * Updated `header.json` with store info.
 
-28 Aug 2025
-Added Google Tag Manager
-Added CallUs function
+

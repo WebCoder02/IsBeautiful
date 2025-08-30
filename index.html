@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-M87JL688');</script>
-<!-- End Google Tag Manager -->
+        <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-M87JL688');</script>
+    <!-- End Google Tag Manager -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">IsBeautiful Cosmetics Webstore</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <style>
         * {
             padding: 0;
@@ -495,7 +494,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         // Global variables
         let selectedDishes = {};
         let storeData = {};
-        let headerData = {};
 
         // Helper function to slugify strings
         function slugify(text) {
@@ -515,11 +513,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         // Load all data
         async function loadData() {
             try {
-                // Load header data
-                const headerResponse = await fetch("header.json");
-                headerData = await headerResponse.json();
-                updateHeader();
-
                 // Load store data
                 const storeResponse = await fetch("store.json");
                 storeData = await storeResponse.json();
@@ -530,6 +523,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         item.id = slugify(item.name); // Generate ID for each item
                     });
                 }
+                updateHeader();
                 createCategoryNavigation();
                 renderMenu();
 
@@ -559,15 +553,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         // Update header information
         function updateHeader() {
-            document.querySelector(".restaurant-name").textContent = headerData.storeName || "Restaurant";
+            const header = Array.isArray(storeData.header) ? storeData.header[0] : {};
+            document.querySelector(".restaurant-name").textContent = header.storeName || "Restaurant";
             document.querySelector(".restaurant-details").textContent = 
-                `${headerData.address || ""} | ${headerData.contact || ""}`.replace(/^\s*\|\s*|\s*\|\s*$/g, '');
-            document.getElementById("page-title").textContent = `${headerData.storeName || "Restaurant"} Menu`;
+                `${header.address || ""} | ${header.contact || ""}`.replace(/^\s*\|\s*|\s*\|\s*$/g, '');
+            document.getElementById("page-title").textContent = `${header.storeName || "Restaurant"} Menu`;
             
             // Update call button
             const callBtn = document.getElementById("call-btn");
-            if (headerData.contact) {
-                callBtn.href = `tel:${headerData.contact.replace(/\s+/g, '')}`;
+            if (header.contact) {
+               callBtn.href = `tel:${header.contact.toString().replace(/\s+/g, '')}`;
             }
         }
 
@@ -842,8 +837,8 @@ function updateCartUI() {
                 alert("Please select at least one item.");
                 return;
             }
-
-            if (!headerData.whatsappNumber) {
+            const header = Array.isArray(storeData.header) ? storeData.header[0] : {};
+            if (!header.whatsappNumber) {
                 alert("WhatsApp number not found. Please try again later.");
                 return;
             }
@@ -853,18 +848,19 @@ function updateCartUI() {
                 .join("\n");
 
             let orderTotal = calculateTotal();
-            const upiId = storeData.settings?.upi_id || headerData.upiId || '';
+            const upiId =  header.upi_id || '';
             const upiLink = `upi://pay?pa=${upiId}&am=${orderTotal}&cu=INR`;
             
             const whatsappMessage = `Order Details:\n ${orderSummary} \n \n Total: ₹${orderTotal} \n \n Pay via UPI: ${upiLink}`;
-            const whatsappURL = `https://wa.me/${headerData.whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+            const whatsappURL = `https://wa.me/${header.whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
             
             window.open(whatsappURL, "_blank");
         }
 
         // Share location on WhatsApp
          function sendLocationOnWhatsApp() {
-            if (!headerData.whatsappNumber) {
+            const header = Array.isArray(storeData.header) ? storeData.header[0] : {};
+            if (!header.whatsappNumber) {
                 alert("WhatsApp number not found. Please try again later.");
                 return;
             }
@@ -875,7 +871,7 @@ function updateCartUI() {
                     const longitude = position.coords.longitude;
                     const locationURL = `https://maps.google.com/?q=${latitude},${longitude}`;
                     const whatsappMessage = `This is my current location: ${locationURL}`;
-                    const whatsappURL = `https://wa.me/${headerData.whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+                    const whatsappURL = `https://wa.me/${header.whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
                     
                     window.open(whatsappURL, '_blank');
                 }, function(error) {
@@ -924,12 +920,13 @@ function updateCartUI() {
         }
         //Function for call us button
         function callUs() {
-            if (headerData.contact) {
-                window.location.href = `tel:${headerData.contact.replace(/\s+/g, '')}`;
-            } else {
-                alert("Phone number not available.");
-            }
+        const header = Array.isArray(storeData.header) ? storeData.header[0] : {};
+        if (header.contact) {
+        window.location.href = `tel:${header.contact.toString().replace(/\s+/g, '')}`;
+        } else {
+            alert("Phone number not available.");
         }
+}
 
         // Handle window resize
         window.addEventListener("resize", function() {

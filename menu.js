@@ -175,11 +175,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-fetch('header.json')
+fetch('store.json')
     .then(response => response.json())
     .then(data => {
-        document.querySelector('.restaurant-name').textContent = data.storeName;
-        document.querySelector('.restaurant-details').textContent = `${data.address} | ${data.contact}`;
+        document.querySelector('.restaurant-name').textContent = data.header.storeName;
+        document.querySelector('.restaurant-details').textContent = `${data.header.address} | ${data.header.contact}`;
     })
     .catch(error => console.error('Error loading header data:', error));
 
@@ -321,13 +321,13 @@ function filterDishes(category) {
 let selectedDishes = {};
 let whatsappNumber = "";
 let upiId = "";
-fetch("header.json")
+fetch("store.json")
     .then(response => response.json())
     .then(data => {
-        document.querySelector(".restaurant-name").textContent = data.storeName;
-        document.querySelector(".restaurant-details").textContent = `${data.address} | ${data.contact}`;
-        whatsappNumber = data.whatsappNumber;
-        upiId = data.upiId;
+        document.querySelector(".restaurant-name").textContent = data.header.storeName;
+        document.querySelector(".restaurant-details").textContent = `${data.header.address} | ${data.header.contact}`;
+        whatsappNumber = data.header.whatsappNumber;
+        upiId = data.header.upiId;
     })
     .catch(error => console.error("Error loading header data:", error));
 
@@ -452,8 +452,9 @@ function shareOnWhatsApp() {
 }
 //Function for call us button
         function callUs() {
-            if (headerData.contact) {
-                window.location.href = `tel:${headerData.contact.replace(/\s+/g, '')}`;
+            const header = Array.isArray(storeData.header) ? storeData.header[0] : {};
+            if (header.contact) {
+                window.location.href = `tel:${header.contact.toString().replace(/\s+/g, '')}`;
             } else {
                 alert("Phone number not available.");
             }

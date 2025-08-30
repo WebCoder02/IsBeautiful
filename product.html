@@ -155,7 +155,6 @@
     </div>
 
     <script>
-        let headerData = {};
         let storeData = {};
 
         // Helper function to slugify strings (must match the one in index.html)
@@ -196,13 +195,9 @@
             }
 
             try {
-                const [headerResponse, storeResponse] = await Promise.all([
-                    fetch("header.json"),
-                    fetch("store.json")
-                ]);
-
-                headerData = await headerResponse.json();
+                const storeResponse = await fetch("store.json");
                 storeData = await storeResponse.json();
+                const headerData = Array.isArray(storeData.header) ? storeData.header[0] : {}; //Added headerData to access array data
 
                 const product = storeData.items.find(item => slugify(item.name) === productId);
 
@@ -216,10 +211,10 @@
                         <p class="product-description">${product.description || 'No description available.'}</p>
                         ${product.add_text ? `<p class="add-text">${product.add_text}</p>` : ''}
                         <div class="action-buttons">
-                            <button class="action-button whatsapp" onclick="shareOnWhatsApp('${product.name}', ${product.price})">
+                            <button class="action-button whatsapp" onclick="shareOnWhatsApp('${product.name}', ${product.price}, '${headerData.whatsappNumber || ''}')">
                                 <i class="fab fa-whatsapp"></i> Order on WhatsApp
                             </button>
-                            <button class="action-button upi" onclick="payViaUPI(${product.price})">
+                            <button class="action-button upi" onclick="payViaUPI(${product.price}, '${headerData.upi_id || ''}')">
                                 <i class="fas fa-money-bill-wave"></i> Pay via UPI
                             </button>
                         </div>
@@ -235,18 +230,17 @@
             }
         }
 
-        function shareOnWhatsApp(productName, productPrice) {
-            if (!headerData.whatsappNumber) {
+        function shareOnWhatsApp(productName, productPrice, whatsappNumber) {//Added a new argument whatsappNumber
+            if (!whatsappNumber) {
                 alert("WhatsApp number not found. Please try again later.");
                 return;
             }
             const message = `I would like to order: ${productName} - ₹${productPrice}`;
-            const whatsappURL = `https://wa.me/${headerData.whatsappNumber}?text=${encodeURIComponent(message)}`;
+            const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
             window.open(whatsappURL, "_blank");
         }
 
-        function payViaUPI(amount) {
-            const upiId = headerData.upiId || '';
+        function payViaUPI(amount, upiId) { //Added a new argument upiId
             if (!upiId) {
                 alert("UPI ID not configured. Please contact the store.");
                 return;
